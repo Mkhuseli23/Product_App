@@ -1,6 +1,8 @@
 import { Ionicons } from '@expo/vector-icons';
+import AsyncStorage from '@react-native-async-storage/async-storage'; // Import AsyncStorage
 import { useRouter } from 'expo-router';
 import { signInWithEmailAndPassword } from 'firebase/auth';
+import { doc, getDoc } from 'firebase/firestore'; // Import Firestore methods
 import React, { useState } from 'react';
 import {
   Alert,
@@ -11,7 +13,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import { auth } from '../../firebaseConfig';
+import { auth, firestore } from '../firebaseConfig'; // Import firestore
 
 export default function Login() {
   const router = useRouter();
@@ -21,8 +23,30 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      await signInWithEmailAndPassword(auth, email, password);
-      router.replace('/(tabs)');
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Store the user information (or a session token) in AsyncStorage
+      await AsyncStorage.setItem('userSession', JSON.stringify(user));
+
+      // Fetch user role from Firestore
+      const userDocRef = doc(firestore, 'users', user.uid); // 'users' is the collection
+      const userDocSnap = await getDoc(userDocRef);
+
+      if (userDocSnap.exists()) {
+        const userRole = userDocSnap.data()?.role; // Assuming 'role' is a field in Firestore document
+
+        // Store role in AsyncStorage if needed
+        await AsyncStorage.setItem('userRole', userRole);
+
+        if (userRole === 'driver') {
+          router.replace('/DriverDashboard');
+        } else {
+          router.replace('/(tabs)');
+        }
+      } else {
+        throw new Error('User document does not exist in Firestore');
+      }
     } catch (error: any) {
       Alert.alert('Login Failed', error.message || 'Invalid email or password');
     }
