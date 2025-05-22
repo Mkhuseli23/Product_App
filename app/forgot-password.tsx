@@ -1,7 +1,16 @@
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { sendPasswordResetEmail } from 'firebase/auth';
 import React, { useState } from 'react';
-import { Alert, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
+import {
+  Alert,
+  ImageBackground,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native';
 import { auth } from '../firebaseConfig';
 
 export default function ForgotPassword() {
@@ -23,45 +32,60 @@ export default function ForgotPassword() {
   };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.formBox}>
-        <Text style={styles.title}>Forgot Password</Text>
-        <TextInput
-          style={styles.input}
-          placeholder="Email"
-          value={email}
-          onChangeText={setEmail}
-          keyboardType="email-address"
-          autoCapitalize="none"
-        />
-        <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
-          <Text style={styles.resetButtonText}>Reset Password</Text>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => router.push('/login')}>
-          <Text style={styles.linkText}>Back to Login</Text>
-        </TouchableOpacity>
+    <ImageBackground
+      source={require('../assets/images/depositphotos.jpg')} // Make sure bg.jpg is in the assets folder
+      style={styles.background}
+      resizeMode="cover"
+    >
+      <View style={styles.container}>
+        <View style={styles.formBox}>
+          <Ionicons name="lock-closed-outline" size={48} color="#007b8a" style={styles.icon} />
+          <Text style={styles.title}>Forgot Password</Text>
+
+          <TextInput
+            style={styles.input}
+            placeholder="Email"
+            value={email}
+            onChangeText={setEmail}
+            keyboardType="email-address"
+            autoCapitalize="none"
+          />
+          <TouchableOpacity style={styles.resetButton} onPress={handleReset}>
+            <Text style={styles.resetButtonText}>Reset Password</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => router.push('/login')}>
+            <Text style={styles.linkText}>Back to Login</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
+  background: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f0f8ff',
     justifyContent: 'center',
     alignItems: 'center',
   },
   formBox: {
     width: 320,
     padding: 20,
-    backgroundColor: '#dff1ff',
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
     borderRadius: 8,
     alignItems: 'center',
     shadowColor: '#000',
     shadowOpacity: 0.1,
     shadowRadius: 10,
     elevation: 5,
+  },
+  icon: {
+    marginBottom: 10,
   },
   title: {
     fontSize: 24,
